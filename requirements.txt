@@ -87,7 +87,7 @@ traitlets==5.14.3
 trio==0.30.0
 trio-websocket==0.12.2
 typing_extensions==4.14.1
-tzdata==2024.2
+tzdata
 uritemplate==4.2.0
 urllib3==2.5.0
 vine==5.1.0
