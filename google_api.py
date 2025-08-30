@@ -87,7 +87,7 @@ def get_latest_code(service, user_input):
 def get_household_link(service, user_input):
     query = (
         f'from:info@account.netflix.com to:{user_input} '
-        'label:unread in:inbox newer_than:15min'
+        'label:unread in:inbox newer_than:15m'
     )
     results = service.users().messages().list(userId='me', q=query, maxResults=5).execute()
     messages = results.get('messages', [])
@@ -106,26 +106,22 @@ def get_household_link(service, user_input):
         else:
             yield payload
 
-    plain_body_decoded = ''
-    html_body_decoded = ''
-
+    body_decoded = ''
     for part in get_parts(msg['payload']):
         mimeType = part.get('mimeType')
         data = part['body'].get('data')
         if data:
             decoded = urlsafe_b64decode(data).decode('utf-8', errors='ignore')
-            if mimeType == 'text/plain':
-                plain_body_decoded += decoded
-            elif mimeType == 'text/html':
-                html_body_decoded += decoded
-
-     # Extract Netflix verify links
-    verify_link = None
-    if html_body_decoded:
-        soup = BeautifulSoup(html_body_decoded, "html.parser")
-        anchors = soup.find_all('a', href=True)
-
-        # Get the 3rd link
-        verify_link = anchors[2]['href'].strip() if len(anchors) > 2 else None
-
-        return  verify_link
+            if mimeType in ['text/plain', 'text/html']:
+                body_decoded += decoded
+    match = re.search(
+        r'https://www\.netflix\.com/account/update-primary-location\?[^"\s<\]]+',
+        body_decoded
+    )
+    if match:
+        verify_link = match.group(0)
+        print("Netflix Household Link:", verify_link)
+        return verify_link
+    else:
+        print("No Netflix household link found in email.")
+        return None
