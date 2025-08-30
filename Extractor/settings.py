@@ -25,7 +25,8 @@ SECRET_KEY = 'django-insecure-mf8$+b7y$_jif%(q+6!f%!4fo(2$6c*a!($k_a88u#7^n-hta@
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["*",]
+ALLOWED_HOSTS = ["extractor-esev.onrender.com", "localhost", "127.0.0.1"]
+
 
 
 
